@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        *,*:after,*:before{
+            box-sizing: border-box;
+        }
+        body{
+            overflow: hidden;
+        }
+        .whole-page{
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .container{
+            width: 500px;
+            height:350px;
+            border-radius: 50px;
+            box-shadow: 5px 5px 20px 5px rgba(255, 81, 194, 0.2);
+            padding: 3rem;
+        }
+        .container:hover{
+            box-shadow: 5px 5px 20px 10px rgba(255, 81, 194, 0.2);;
+        }
+        .box{
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .input-field{
+            border: 2px solid rgb(254, 220, 251);
+            display: flex;
+            align-items: center;
+        }
+        input{
+            border: none;
+            outline: none;
+            width:90%;
+            padding: 1.5rem;
+            font-size: 1rem;
+        }
+        .input-field i{
+            color: rgb(92, 165, 255);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .errText{
+            color: rgb(255, 141, 141);
+            padding-left: 2rem;
+            display: none;
+        }
+        .progress-container{
+            width: 100%;
+            height: 5px;
+            background-color: rgb(255, 255, 255);
+            margin-top: 1.1rem;
+            border-radius:20px;
+        }
+        .progress-bar{
+            width: 0%;
+            height: 100%;
+            background-image:linear-gradient(to left, #007cf0, #00dfd8, #007cf0);
+            transition: all 0.4s linear;
+            border-radius:20px;
+        }
+        .condition{
+            color: rgb(144, 144, 144);
+        }
+        .conditionSatisfied{
+            list-style-type: "✅";
+        }
+        .conditionFailed{
+            list-style-type: "❌";
+        }
+        .submitBtn{
+            margin-top: 2rem;
+            width: 200px;
+            color: rgb(8, 8, 8);
+            background-color: rgb(255, 200, 233);
+            border-radius: 2rem;
+            transition: transform 0.2s linear;
+            font-size: 1.1rem;
+        }
+        .submitBtn:hover{
+            /* color: rgb(0, 85, 255); */
+            background-color: rgb(255, 166, 219);
+            transform:scale(1.1);
+        }
+        
+
+    </style>
+</head>
+<body>
+    <div class="whole-page">
+        <div class="container">
+            <div class="box">
+                <div class="input-field">
+                    <input type="password" placeholder="Enter your password">
+                    <i class="fa-regular fa-eye"></i>
+                </div>
+                <span class="errText">Password can't be empty...</span>
+                <div class="progress-container">
+                    <div class="progress-bar"></div>
+                </div>
+                <div class="conditions">
+                    <ul>
+                        <li class="condition uc">Atleast 1 UpperCase</li>
+                        <li class="condition lc">Atleast 1 LowerCase</li>
+                        <li class="condition num">Atleast 1 Number(0-9)</li>
+                        <li class="condition sc">Atleast 1 special Character (!@#$%^&*)</li>
+                        <li class="condition ec">Atleast 8 characters</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <input type="submit" value="Submit" class="submitBtn">
+    </div>
+    <!-- <script src="script.js" ></script> -->
+    <script>
+        const showAndHide = document.querySelector(".fa-eye");
+        const inputField = document.querySelector("input");
+        const submitBtn = document.querySelector(".submitBtn");
+
+        const progressBar = document.querySelector(".progress-bar");
+        const errText = document.querySelector(".errText");
+
+        showAndHide.addEventListener("click",()=>{
+            if(showAndHide.classList.contains("fa-eye")){
+                showAndHide.classList.remove("fa-eye");
+                showAndHide.classList.add("fa-eye-slash");
+                inputField.type="text";
+            }
+            else{
+                showAndHide.classList.remove("fa-eye-slash");
+                showAndHide.classList.add("fa-eye");
+                inputField.type="password";
+            }
+        });
+
+        submitBtn.addEventListener("click",()=>{
+            const inptValue = inputField.value;
+            if(inptValue.trim(" ") == ""){
+                errText.style.display="inline";
+            }
+
+            const errs = document.querySelectorAll(".condition");
+            errs.forEach(err => {
+                if(!err.classList.contains("conditionSatisfied")){
+                    err.classList.add("conditionFailed");
+                }
+            })
+        })
+
+        const uc = document.querySelector(".uc");
+        const lc = document.querySelector(".lc");
+        const num = document.querySelector(".num");
+        const sc = document.querySelector(".sc");
+        const ec = document.querySelector(".ec");
+  
+        inputField.addEventListener("input", () => {
+            errText.style.display = "none";
+            const inptValue = inputField.value;
+
+            if (inptValue.trim() === "") {
+                const allConditions = document.querySelectorAll(".condition");
+                allConditions.forEach(condition => {
+                    condition.classList.remove("conditionSatisfied");
+                    condition.classList.remove("conditionFailed");
+                    progressBar.style.width="0%";
+                });
+                return;
+            }
+
+            let hasCapital=false;
+            let hasLower=false;
+            let hasNum=false;
+            let hasChar=false;
+
+            let chars = "!@#$%^&*()?/<>,.{}|:;~";
+            for (let i = 0; i < inptValue.length; i++) {
+                const charCode = inptValue.charCodeAt(i);
+                if (charCode >= 65 && charCode <= 90) {
+                    hasCapital = true;
+                }
+                if (charCode >= 97 && charCode <= 122) {
+                    hasLower = true;
+                }
+                if (inptValue[i]>=0 && inptValue[i]<=9){
+                    hasNum = true;
+                }
+                if (chars.split("").includes(inptValue[i])){
+                    hasChar=true;
+                }
+
+            }
+
+            let passedCount =0 ;
+
+            if (hasCapital) {
+                passedCount++;
+                uc.classList.add("conditionSatisfied");
+                uc.classList.remove("conditionFailed");
+            } else {
+                uc.classList.remove("conditionSatisfied");
+                passedCount=Math.max(passedCount--,0);
+            }
+
+            if (hasLower) {
+                passedCount++;
+                lc.classList.add("conditionSatisfied");
+                lc.classList.remove("conditionFailed");
+            } else {
+                lc.classList.remove("conditionSatisfied");
+                passedCount=Math.max(passedCount--,0);
+            }
+
+            if (hasNum) {
+                passedCount++;
+                num.classList.add("conditionSatisfied");
+                num.classList.remove("conditionFailed");
+            } else {
+                num.classList.remove("conditionSatisfied");
+                passedCount=Math.max(passedCount--,0);
+            }
+
+            if (hasChar) {
+                passedCount++;
+                sc.classList.add("conditionSatisfied");
+                sc.classList.remove("conditionFailed");
+            } else {
+                sc.classList.remove("conditionSatisfied");
+                passedCount=Math.max(passedCount--,0);
+            }
+
+            const has8D = inptValue.length >= 8;
+            if (has8D) {
+                passedCount++;
+                ec.classList.add("conditionSatisfied");
+                ec.classList.remove("conditionFailed");
+            } else {
+                ec.classList.remove("conditionSatisfied");
+                passedCount=Math.max(passedCount--,0);
+            }
+
+            switch(passedCount){
+                case 0 : progressBar.style.width="0%";
+                         break;
+                case 1 : progressBar.style.width="20%";
+                         break;
+                case 2 : progressBar.style.width="40%";
+                         break;
+                case 3 : progressBar.style.width="60%";
+                         break;
+                case 4 : progressBar.style.width="80%";
+                         break;
+                case 5 : progressBar.style.width="100%";
+                // default : progressBar.style.width="0%";
+            }
+
+            console.log(passedCount);
+        });
+
+
+
+
+        
+
+    </script>
+</body>
+</html>
